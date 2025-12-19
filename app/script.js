@@ -16,6 +16,16 @@ function getCookie(name) {
     return null;
 }
 
+// 遊戲狀態變數
+let board = ['', '', '', '', '', '', '', '', ''];
+let currentPlayer = 'X';
+let gameActive = true;
+let playerScore = 0;
+let computerScore = 0;
+let drawScore = 0;
+let difficulty = 'medium';
+let isDarkTheme = false;
+
 function saveScores() {
     setCookie('playerScore', playerScore);
     setCookie('computerScore', computerScore);
