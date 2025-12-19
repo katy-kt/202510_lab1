@@ -1,11 +1,62 @@
-// 遊戲狀態
-let board = ['', '', '', '', '', '', '', '', ''];
-let currentPlayer = 'X';
-let gameActive = true;
-let playerScore = 0;
-let computerScore = 0;
-let drawScore = 0;
-let difficulty = 'medium';
+// Cookie 工具函數
+function setCookie(name, value, days = 365) {
+    const expires = new Date();
+    expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+    document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`;
+}
+
+function getCookie(name) {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
+
+function saveScores() {
+    setCookie('playerScore', playerScore);
+    setCookie('computerScore', computerScore);
+    setCookie('drawScore', drawScore);
+    setCookie('difficulty', difficulty);
+    setCookie('theme', isDarkTheme ? 'dark' : 'light');
+}
+
+function loadScores() {
+    const savedPlayerScore = getCookie('playerScore');
+    const savedComputerScore = getCookie('computerScore');
+    const savedDrawScore = getCookie('drawScore');
+    const savedDifficulty = getCookie('difficulty');
+    const savedTheme = getCookie('theme');
+    
+    if (savedPlayerScore !== null) playerScore = parseInt(savedPlayerScore) || 0;
+    if (savedComputerScore !== null) computerScore = parseInt(savedComputerScore) || 0;
+    if (savedDrawScore !== null) drawScore = parseInt(savedDrawScore) || 0;
+    if (savedDifficulty !== null) difficulty = savedDifficulty;
+    if (savedTheme !== null) isDarkTheme = savedTheme === 'dark';
+    
+    // 應用主題
+    applyTheme();
+}
+
+// 主題切換功能
+function applyTheme() {
+    if (isDarkTheme) {
+        document.body.classList.add('dark-theme');
+        themeBtn.textContent = '☀️ 淺色主題';
+    } else {
+        document.body.classList.remove('dark-theme');
+        themeBtn.textContent = '🌙 深色主題';
+    }
+}
+
+function toggleTheme() {
+    isDarkTheme = !isDarkTheme;
+    applyTheme();
+    saveScores(); // 保存主題設置
+}
 
 // 獲勝組合
 const winningConditions = [
@@ -25,18 +76,21 @@ const statusDisplay = document.getElementById('status');
 const resetBtn = document.getElementById('resetBtn');
 const resetScoreBtn = document.getElementById('resetScoreBtn');
 const difficultySelect = document.getElementById('difficultySelect');
+const themeBtn = document.getElementById('themeBtn');
 const playerScoreDisplay = document.getElementById('playerScore');
 const computerScoreDisplay = document.getElementById('computerScore');
 const drawScoreDisplay = document.getElementById('drawScore');
 
 // 初始化遊戲
 function init() {
+    loadScores(); // 載入保存的分數
     cells.forEach(cell => {
         cell.addEventListener('click', handleCellClick);
     });
     resetBtn.addEventListener('click', resetGame);
     resetScoreBtn.addEventListener('click', resetScore);
     difficultySelect.addEventListener('change', handleDifficultyChange);
+    themeBtn.addEventListener('click', toggleTheme);
     updateScoreDisplay();
 }
 
@@ -54,10 +108,8 @@ function handleCellClick(e) {
     makeMove(cellIndex, 'X');
     
     if (gameActive && currentPlayer === 'O') {
-        const userInput = prompt("輸入延遲時間（毫秒）");
-        const delay = parseInt(userInput) || 1000; // 預設 1000ms，如果無效
-        // 使用函數引用避免代碼注入
-        setTimeout(computerMove, delay);
+        // 設定固定延遲時間 1000ms，避免煩人的對話框
+        setTimeout(computerMove, 1000);
     }
 }
 
@@ -66,8 +118,13 @@ function makeMove(index, player) {
     board[index] = player;
     const cell = document.querySelector(`[data-index="${index}"]`);
     cell.textContent = player;
-    cell.classList.add('taken');
+    cell.classList.add('taken', 'animate');
     cell.classList.add(player.toLowerCase());
+    
+    // 移除動畫類別，避免重複動畫
+    setTimeout(() => {
+        cell.classList.remove('animate');
+    }, 300);
     
     checkResult();
     
@@ -271,11 +328,13 @@ function resetGame() {
 
 // 重置分數
 function resetScore() {
-    playerScore = 0;
-    computerScore = 0;
-    drawScore = 0;
-    updateScoreDisplay();
-    resetGame();
+    if (confirm('確定要重置所有分數嗎？此操作無法復原。')) {
+        playerScore = 0;
+        computerScore = 0;
+        drawScore = 0;
+        updateScoreDisplay();
+        resetGame();
+    }
 }
 
 // 更新分數顯示
@@ -283,11 +342,13 @@ function updateScoreDisplay() {
     playerScoreDisplay.textContent = playerScore;
     computerScoreDisplay.textContent = computerScore;
     drawScoreDisplay.textContent = drawScore;
+    saveScores(); // 保存分數到 Cookie
 }
 
 // 處理難度變更
 function handleDifficultyChange(e) {
     difficulty = e.target.value;
+    saveScores(); // 保存難度設置
     resetGame();
 }
 

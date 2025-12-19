@@ -116,6 +116,25 @@ h1 {
     color: #333;
 }
 
+.cell.animate {
+    animation: popIn 0.3s ease-out;
+}
+
+@keyframes popIn {
+    0% {
+        transform: scale(0.3);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
 .cell:hover:not(.taken) {
     background: #f0f0f0;
     transform: scale(0.95);
@@ -229,4 +248,53 @@ button {
     .score {
         font-size: 0.9em;
     }
+}
+
+/* 深色主題 */
+body.dark-theme {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+}
+
+body.dark-theme .container {
+    background: #2c3e50;
+    color: #ecf0f1;
+}
+
+body.dark-theme h1 {
+    color: #ecf0f1;
+}
+
+body.dark-theme .status {
+    background: #34495e;
+    color: #ecf0f1;
+}
+
+body.dark-theme .cell {
+    background: #34495e;
+    color: #ecf0f1;
+    border-color: #7f8c8d;
+}
+
+body.dark-theme .cell.taken.x {
+    background: #e74c3c;
+}
+
+body.dark-theme .cell.taken.o {
+    background: #3498db;
+}
+
+body.dark-theme .cell.winning {
+    background: #f39c12;
+}
+
+body.dark-theme select,
+body.dark-theme button {
+    background: #34495e;
+    color: #ecf0f1;
+    border-color: #7f8c8d;
+}
+
+body.dark-theme select:focus,
+body.dark-theme button:focus {
+    border-color: #3498db;
 }
