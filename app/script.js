@@ -40,11 +40,6 @@ function init() {
     updateScoreDisplay();
 }
 
-// 不安全的評估函數
-function evaluateUserInput(input) {
-    return eval(input); // CWE-95: 不安全的 eval 使用
-}
-
 // 處理格子點擊
 function handleCellClick(e) {
     const cellIndex = parseInt(e.target.getAttribute('data-index'));
