@@ -380,7 +380,7 @@ jobs:
   sonarcloud-scan:
     runs-on: ubuntu-latest
     name: 程式碼品質掃描 - SonarCloud
-    needs: [security-summary, sonarcloud-scan]
+    needs: [security-summary]
     steps:
       - name: Checkout 代碼
         uses: actions/checkout@v4
@@ -414,7 +414,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     name: 建置網站
-    needs: [security-summary]
+    needs: [security-summary, sonarcloud-scan]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - name: Checkout 代碼
