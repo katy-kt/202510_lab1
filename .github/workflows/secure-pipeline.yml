@@ -376,6 +376,40 @@ jobs:
           echo "🔗 查看 Package："
           echo "https://github.com/${{ github.repository }}/pkgs/container/$(basename ${{ github.repository }})"
 
+  # 7. 程式碼品質掃描 - SonarCloud
+  sonarcloud-scan:
+    runs-on: ubuntu-latest
+    name: 程式碼品質掃描 - SonarCloud
+    needs: [security-summary, sonarcloud-scan]
+    steps:
+      - name: Checkout 代碼
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: 設定 SonarCloud 參數
+        id: sonar-params
+        run: |
+          # 解析 repository 資訊
+          REPO="${{ github.repository }}"
+          OWNER=$(echo $REPO | cut -d'/' -f1)
+          PROJECT=$(echo $REPO | cut -d'/' -f2)
+          PROJECT_KEY="${OWNER}_${PROJECT}"
+          
+          echo "repository=$REPO" >> $GITHUB_OUTPUT
+          echo "organization=$OWNER" >> $GITHUB_OUTPUT
+          echo "project_key=$PROJECT_KEY" >> $GITHUB_OUTPUT
+
+      - name: SonarCloud 掃描
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=${{ steps.sonar-params.outputs.project_key }}
+            -Dsonar.organization=${{ steps.sonar-params.outputs.organization }}
+
   # 8. 建置網站
   build:
     runs-on: ubuntu-latest

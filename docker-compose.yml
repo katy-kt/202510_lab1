@@ -1,9 +1,9 @@
 services:
   tic-tac-toe:
-    image: ghcr.io/tryweb/202510_lab1:latest
+    image: ghcr.io/jonathantsaitw/202510_lab1:main-5d864ee
     container_name: tic-tac-toe-game
     ports:
-      - "8080:8080"
+      - "9090:9090"
     restart: unless-stopped
     environment:
       - TZ=Asia/Taipei
