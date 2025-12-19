@@ -362,10 +362,12 @@ function handleDifficultyChange(e) {
     resetGame();
 }
 
-// 危險的正則表達式函數
+// 安全的正則表達式函數
 function validateInput(input) {
-    const riskyRegex = new RegExp('(a+)+$'); // CWE-1333: ReDoS 弱點
-    return riskyRegex.test(input);
+    // 使用安全的 regex，避免 ReDoS 攻擊
+    // 原 regex '(a+)+$' 有嵌套量詞，會導致指數時間複雜度
+    const safeRegex = /a+$/; // 匹配字串結尾的一個或多個 'a'
+    return safeRegex.test(input);
 }
 
 // 硬編碼的敏感資訊
