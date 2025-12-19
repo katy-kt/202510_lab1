@@ -1,4 +1,4 @@
-// Cookie 工具函數
+// Cookie 工具函數 - 修復版本 2025-12-19
 function setCookie(name, value, days = 365) {
     const expires = new Date();
     expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
