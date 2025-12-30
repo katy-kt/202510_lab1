@@ -409,6 +409,7 @@ jobs:
           args: >
             -Dsonar.projectKey=${{ steps.sonar-params.outputs.project_key }}
             -Dsonar.organization=${{ steps.sonar-params.outputs.organization }}
+            -Dsonar.sources=app
 
   # 8. 建置網站
   build:
